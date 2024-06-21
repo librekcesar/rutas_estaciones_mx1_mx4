@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8" />
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.0/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+    <!-- Estas lineas son para que funcione en GitHub -->
+    <link rel="stylesheet" href="https://librekcesar.github.io/busca_zipcodes4/leaflet-search-master/leaflet-search-master/src/leaflet-search.css" />
+    <script src="https://librekcesar.github.io/busca_zipcodes4/leaflet-search-master/leaflet-search-master/src/leaflet-search.js"></script>
+    <style>
+        #map {
+            width: 100%;
+            height: 900px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <!-- Descomentar este bloque de código en el github -->
+    <script src="https://unpkg.com/leaflet@1.3.0/dist/leaflet.js"></script>
+    <script src="https://librekcesar.github.io/busca_zipcodes4/leaflet-search-master/leaflet-search-master/src/leaflet-search.js"></script>
+    <script src="centroidemx4.js"></script> <!-- GeoJSON de la primera capa de puntos -->
+    <script src="coord_media_polan_bond.js"></script> <!-- GeoJSON de la segunda capa de puntos -->
+    <script src="centroide_mx1.js"></script> <!-- GeoJSON de la tercera capa de puntos -->
+    <script src="bondojito.js"></script>
+    <script src="pantaco.js"></script>
+    <script src="polanco.js"></script>
+    <script src="iztapalapa.js"></script>
+    <script src="media_panta_izta.js"></script>
+    <script src="media_todas.js"></script>
+    <script src="ruta_coor_media_pola_bondj.js"></script> <!-- GeoJSON de la primera capa de líneas -->
+    <script src="rutas_iztapalapa_mx1_mx4.js"></script> <!-- GeoJSON de la segunda capa de líneas -->
+    <script src="ruta_pantaco_mx1_mx4.js"></script> <!-- GeoJSON de la tercera capa de líneas -->
+    <script src="ruta_centroide_mx1_mx1.js"></script>
+    <script src="ruta_polanco_mx1.js"></script>
+    <script src="rutas_bondojito_mx1_mx4.js"></script>
+    <script src="rutas_centroides_iztapalapa_MX4.js"></script>
+    <script src="rutas_iztapalapa_mx4.js"></script>
+    <script src="rutas_todas_estaciones.js"></script>
+
+    <script>
+    // Suponiendo que 'centroidemx4.js' define una variable 'cenmx4' con el GeoJSON de la primera capa de puntos
+    var puntos1 = cenmx4;
+    // Suponiendo que 'puntos_geojson_2.js' define una variable 'puntos2' con el GeoJSON de la segunda capa de puntos
+    var puntos2 = coordmpolbond;
+    // Suponiendo que 'puntos_geojson_3.js' define una variable 'puntos3' con el GeoJSON de la tercera capa de puntos
+    var puntos3 = centroide_mx1;
+    //
+    var puntos4 = bondojo;
+    //
+    var puntos5 = panta;
+    //
+    var puntos6 = polan;
+    //
+    var puntos7 = izta;
+    //
+    var puntos8 = pantaizta;
+    //
+    var puntos9 = todas;
+    // Suponiendo que 'lineas_geojson_1.js' define una variable 'lineas1' con el GeoJSON de la primera capa de líneas
+    var lineas1 = ruta_media_polbond;
+    // Suponiendo que 'lineas_geojson_2.js' define una variable 'lineas2' con el GeoJSON de la segunda capa de líneas
+    var lineas2 = rut_izta_mx1mx4;
+    // Suponiendo que 'lineas_geojson_3.js' define una variable 'lineas3' con el GeoJSON de la tercera capa de líneas
+    var lineas3 = rut_panta_mx1mx4;
+    //
+    var lineas4 = centMX1MX1;
+    //
+    var lineas5 = polMX1;
+    //
+    var lineas6 = bondomx1mx4;
+    //
+    var lineas7 = centiztamx4; 
+    //
+    var lineas8 = iztaMX4;
+    //
+    var lineas9 = ruttodas;
+
+    // Crear el mapa centrado en una ubicación específica
+    var map = new L.Map('map', {zoom: 8, center: new L.latLng([19.51971, -99.148]) });
+
+    // Añadir capa de tiles al mapa
+    map.addLayer(new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'));
+
+    // Función para crear capas de puntos
+    function crearCapaPuntos(data) {
+        return new L.GeoJSON(data, {
+            pointToLayer: function (feature, latlng) {
+                return L.circleMarker(latlng, {
+                    radius: 10,
+                    fillColor: "#1578D5",
+                    color: "#040305",
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 0.7
+                });
+            },
+            onEachFeature: function (feature, layer) {
+                var popupContent = '<h4 style="color:' + feature.properties.color + '">' +
+                                   'Nombre de estación: ' + feature.properties.station_name + '</h4>' +
+                                   'Station code: ' + feature.properties.estacion + '</h4>' + ' ' +
+                                   'Dirección: ' + feature.properties.direccion;
+                layer.bindPopup(popupContent);
+            }
+        });
+    }
+
+    // Crear las capas de puntos
+    var capaPuntos1 = crearCapaPuntos(puntos1);
+    var capaPuntos2 = crearCapaPuntos(puntos2);
+    var capaPuntos3 = crearCapaPuntos(puntos3);
+    var capaPuntos4 = crearCapaPuntos(puntos4);
+    var capaPuntos5 = crearCapaPuntos(puntos5);
+    var capaPuntos6 = crearCapaPuntos(puntos6);
+    var capaPuntos7 = crearCapaPuntos(puntos7);
+    var capaPuntos8 = crearCapaPuntos(puntos8);
+    var capaPuntos9 = crearCapaPuntos(puntos9);
+
+    // Función para crear capas de líneas
+    function crearCapaLineas(data) {
+        return new L.GeoJSON(data, {
+            style: function (feature) {
+                return {
+                    color: "#1E66EC",
+                    weight: 2,
+                    opacity: 1
+                };
+            },
+            onEachFeature: function (feature, layer) {
+                var popupContent = '<h4 style="color:' + feature.properties.color + '">' +
+                                   'Nombre de la línea: ' + feature.properties.name + '</h4>' +
+                                   'Descripción: ' + feature.properties.description;
+                layer.bindPopup(popupContent);
+            }
+        });
+    }
+
+    // Crear las capas de líneas
+    var capaLineas1 = crearCapaLineas(lineas1);
+    var capaLineas2 = crearCapaLineas(lineas2);
+    var capaLineas3 = crearCapaLineas(lineas3);
+    var capaLineas4 = crearCapaLineas(lineas4);
+    var capaLineas5 = crearCapaLineas(lineas5);
+    var capaLineas6 = crearCapaLineas(lineas6);
+    var capaLineas7 = crearCapaLineas(lineas7);
+    var capaLineas8 = crearCapaLineas(lineas8);
+    var capaLineas9 = crearCapaLineas(lineas9);
+
+    // Añadir las capas al mapa
+    map.addLayer(capaPuntos1);
+    map.addLayer(capaPuntos2);
+    map.addLayer(capaPuntos3);
+    map.addLayer(capaPuntos4);
+    map.addLayer(capaPuntos5);
+    map.addLayer(capaPuntos6);
+    map.addLayer(capaPuntos7);
+    map.addLayer(capaPuntos8);
+    map.addLayer(capaPuntos9);
+    map.addLayer(capaLineas1);
+    map.addLayer(capaLineas2);
+    map.addLayer(capaLineas3);
+    map.addLayer(capaLineas4);
+    map.addLayer(capaLineas5);
+    map.addLayer(capaLineas6);
+    map.addLayer(capaLineas7);
+    map.addLayer(capaLineas8);
+    map.addLayer(capaLineas9);
+
+    // Añadir control de capas
+    var overlays = {
+        "Centroide MX4": capaPuntos1,
+        "Centroide Polanco-Bondojito": capaPuntos2,
+        "Centroide MX1": capaPuntos3,
+        "Bondojito":capaPuntos4,
+        "Pantaco":capaPuntos5,
+        "Polanco":capaPuntos6,
+        "Iztapalapa":capaPuntos7,
+        "Media Pantaco-Iztapalapa":capaPuntos8,
+        "Media Todas":capaPuntos9,
+        "Rutas Polanco-Bondojito": capaLineas1,
+        "Ruta Iztapalapa MX1-MX4": capaLineas2,
+        "Ruta Pantaco MX1-MX4": capaLineas3,
+        "Ruta centroide MX1": capaLineas4,
+        "Ruta Polanco MX1": capaLineas5,
+        "Ruta Bondojito MX1-MX4":capaLineas6,
+        "Ruta centroide Iztapalapa":capaLineas7,
+        "Ruta Iztapalapa MX4":capaLineas8,
+        "Rutas Todas":capaLineas9
+    };
+
+    L.control.layers(null, overlays, {collapsed: false}).addTo(map);
+    </script>
+</body>
+</html>
